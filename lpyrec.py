@@ -53,13 +53,14 @@ if '-fps' in sys.argv:
 		print('Error: especify a valid value for fps rate (float)')
 		exit()
 
-timelapse = 100 # Wait delay for taking the next frame
+timelapse = 300 # Wait delay for taking the next frame
 if '-timelapse' in sys.argv:
 	try:
-		timelapse = (int(sys.argv[sys.argv.index('-timelapse')+1])*0.0001)
+		timelapse = int(sys.argv[sys.argv.index('-timelapse')+1])
 	except Exception as e:
 		print('Error: especify a valid value for timelapse in milisseconds (integer)')
 		exit()
+timelapse = timelapse*0.0001
 
 window = 'root' # Window id to be captured
 if '-window' in sys.argv:
@@ -68,18 +69,6 @@ if '-window' in sys.argv:
 	except Exception as e:
 		print('Error: especify a valid value for window name (hex)')
 		exit()
-
-"""
-# By default it uses 10MB of RAM for swaping from printscreen to stack the frames
-# this option is about creating tmp on RAM
-ram = int(10)
-if '-ram' in sys.argv:
-	try:
-		ram = int(sys.argv[sys.argv.index('-ram')+1])
-	except Exception as e:
-		print('Error: especify a value for ram in MB (integer)')
-		exit()
-"""
 
 
 
@@ -127,7 +116,7 @@ except Exception as e:
 
 
 if preview != 0:
-	cv2.namedWindow('Screen',cv2.WINDOW_NORMAL)
+	cv2.namedWindow('LPyRec - Q to quit',cv2.WINDOW_NORMAL)
 out = None
 
 fps_time = time.time()
@@ -152,7 +141,7 @@ while 1:
 	out.write(im)
 	if preview != 0:
 		# Show preview screen
-		cv2.imshow('Screen', im )
+		cv2.imshow('LPyRec - Q to quit', im )
 	# Calculate the FPS
 	fps = 1.0 / (time.time() - fps_time)
 	# Print FPS
@@ -165,26 +154,3 @@ while 1:
 		out.release()
 		subprocess.call(['rm','-rf', 'tmp'])
 		break
-
-
-
-"""
-Notes
-	For gnome screenshot
-		subprocess.call(['gnome-screenshot', '-f', 'tmp/screen.jpg'])
-		subprocess.call("gnome-screenshot -f tmp/screen.jpg", shell=True)
-	
-	For mount/umount tmp into memory
-		# Create folder for mounting into the RAM
-		subprocess.call(['sudo','mkdir', '-p', 'tmp'])
-		# Mount folder into the RAM after create its folder
-		try:
-			#Mount it into the RAM for faster access
-			subprocess.call(['sudo','mount', '-t', 'tmpfs', '-o', 'size='+str(ram)+'M', 'tmpfs', 'tmp/'])
-		except Exception as e:
-			raise e
-			exit()
-		# Test for umount tmp after release the output
-		subprocess.call(['sudo','umount', 'tmp'])
-		subprocess.call(['sudo','rm','-rf', 'tmp'])
-"""
